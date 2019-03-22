@@ -2,13 +2,13 @@ package com.dimas.simplemusicapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.dimas.simplemusicapp.constan.BundleKey;
@@ -24,7 +24,11 @@ public class MusicDetailActivity extends AppCompatActivity {
 
     private Music music;
 
-    public static void start(Context context, Music music){
+    private MediaPlayer mediaPlayer;
+
+    private boolean isPlaying = true;
+
+    public static void start(Context context, Music music) {
         Intent intent = new Intent(context, MusicDetailActivity.class);
         intent.putExtra(BundleKey.KEY_MUSIC, music);
         context.startActivity(intent);
@@ -41,19 +45,37 @@ public class MusicDetailActivity extends AppCompatActivity {
 
         initIntentData();
 
+        mediaPlayer = MediaPlayer.create(this, music.getMusic());
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(String.format("%s - %s", music.getSinger(), music.getSong()));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
-
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MusicDetailActivity.this, "klik", Toast.LENGTH_SHORT).show();
+                if (isPlaying) {
+                    mediaPlayer.pause();
+                } else {
+                    mediaPlayer.start();
+                }
+                isPlaying = !isPlaying;
+                updateIndicatorPlayer();
             }
         });
 
+    }
+
+    private void updateIndicatorPlayer() {
+        if (isPlaying){
+            lavIndicatorMusic.setAnimation(R.raw.play_button);
+            btnPlay.setImageResource(R.drawable.ic_pause_circle);
+        }else {
+            lavIndicatorMusic.setAnimation(R.raw.pause_play);
+            btnPlay.setImageResource(R.drawable.ic_play_circle);
+        }
+        lavIndicatorMusic.playAnimation();
     }
 
     private void initIntentData() {
@@ -63,15 +85,33 @@ public class MusicDetailActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        lavIndicatorMusic.setAnimation(R.raw.play_button);
-        lavIndicatorMusic.playAnimation();
+        mediaPlayer.start();
+        updateIndicatorPlayer();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home){
+        if (item.getItemId() == android.R.id.home) {
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        release();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        release();
+    }
+
+    private void release(){
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+        }
     }
 }
