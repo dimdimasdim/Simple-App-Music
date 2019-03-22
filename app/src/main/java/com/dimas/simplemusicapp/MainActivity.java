@@ -5,13 +5,14 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import com.dimas.simplemusicapp.adapter.ListMusicAdapter;
 import com.dimas.simplemusicapp.model.Music;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ListMusicAdapter.OnListMusicListener {
 
     private RecyclerView rvMusic;
 
@@ -41,9 +42,15 @@ public class MainActivity extends AppCompatActivity {
 
 
         adapter = new ListMusicAdapter(this, musics);
+        adapter.setListener(this);
         rvMusic.setLayoutManager(new GridLayoutManager(this, 2));
         rvMusic.setHasFixedSize(true);
         rvMusic.setAdapter(adapter);
 
+    }
+
+    @Override
+    public void onItemClick(Music data) {
+        MusicDetailActivity.start(this, data);
     }
 }

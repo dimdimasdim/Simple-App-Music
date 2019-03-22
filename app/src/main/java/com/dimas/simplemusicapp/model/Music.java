@@ -1,6 +1,9 @@
 package com.dimas.simplemusicapp.model;
 
-public class Music {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Music implements Parcelable {
 
     private String singer;
 
@@ -16,6 +19,38 @@ public class Music {
         this.album = album;
         this.music = music;
     }
+
+    protected Music(Parcel in) {
+        singer = in.readString();
+        song = in.readString();
+        album = in.readInt();
+        music = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(singer);
+        dest.writeString(song);
+        dest.writeInt(album);
+        dest.writeInt(music);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Music> CREATOR = new Creator<Music>() {
+        @Override
+        public Music createFromParcel(Parcel in) {
+            return new Music(in);
+        }
+
+        @Override
+        public Music[] newArray(int size) {
+            return new Music[size];
+        }
+    };
 
     public String getSinger() {
         return singer;
