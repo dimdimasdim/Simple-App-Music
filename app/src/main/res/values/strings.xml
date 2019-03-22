@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Simple Music App</string>
+    <string name="sample_band">Maroon 5</string>
+    <string name="sample_song">She wiil Be Loved</string>
+    <string name="label_music_app">My Simple Music App</string>
 </resources>
